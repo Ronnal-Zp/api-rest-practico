@@ -13,37 +13,38 @@ const api = axios.create({
 });
 
 async function getTrendingMoviesPreview(){
-    const { data } = await api('trending/movie/day');
-    
+
+    const { data } = await api.get('trending/movie/day');
     const movies = data.results;
 
-    let articleImgsContainer = d.querySelector('#trendingPreview .trendingPreview-movieList');
+    let arrMovieContainer = [];
+    $trendingMoviesPreviewList.innerHTML = ""; 
 
     movies.forEach(movie => {
-       const divMovieContainer = d.createElement('div');
-       divMovieContainer.className = 'movie-container';
-       
-       const imgMovie = d.createElement('img');
-       imgMovie.className = 'movie-img';
-       imgMovie.alt = movie.title;
-       imgMovie.src = URL_BASE_IMG + movie.poster_path;
-       
-       divMovieContainer.appendChild(imgMovie);
-
-       articleImgsContainer.appendChild(divMovieContainer);
+        const divMovieContainer = d.createElement('div');
+        divMovieContainer.className = 'movie-container';
+        
+        const imgMovie = d.createElement('img');
+        imgMovie.className = 'movie-img';
+        imgMovie.alt = movie.title;
+        imgMovie.src = URL_BASE_IMG + movie.poster_path;
+        
+        divMovieContainer.appendChild(imgMovie);
+        arrMovieContainer.push(divMovieContainer);
     });
-
+    
+    $trendingMoviesPreviewList.append(...arrMovieContainer);
 }
 
 
 async function getCategoriesPreview(){
-    const { data } = await api('genre/movie/list');
+    const { data } = await api.get('genre/movie/list');
 
     const categories = data.genres;
-    console.log(data, categories);
 
-    let articleCategoriesPreview = d.querySelector('#categoriesPreview .categoriesPreview-list');
-
+    let arrcategoriesPreviewList = [];
+    $categoriesPreviewList.innerHTML = "";
+    
     categories.forEach(category => {
       
         const divCategoryContainer = d.createElement('div');
@@ -55,12 +56,12 @@ async function getCategoriesPreview(){
         h3.id = 'id' + category.id;
 
         divCategoryContainer.appendChild(h3);
-
-        articleCategoriesPreview.appendChild(divCategoryContainer);
+        arrcategoriesPreviewList.push(divCategoryContainer);
     });
-
+    
+    $categoriesPreviewList.append(...arrcategoriesPreviewList);
 }
 
 
-getTrendingMoviesPreview();
-getCategoriesPreview();
+//getTrendingMoviesPreview();
+//getCategoriesPreview();

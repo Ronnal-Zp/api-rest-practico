@@ -147,6 +147,7 @@ button {
   margin-bottom: 16px;
   cursor: pointer;
   display: inline-block;
+  color: var(--purple-medium-3);
 }
 .header-arrow--white {
   color: var(--purple-light-1);
