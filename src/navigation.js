@@ -26,15 +26,20 @@ function navigator() {
   } else {
     homePage()
   }
+
+  window.scrollTo(0, 0)
 }
 
 function homePage() {
   console.log("Home!!")
-  getTrendingMoviesPreview();
-  getCategoriesPreview();
+  const childrenCategoriesPreview = Array.from($trendingMoviesPreviewList.children);
 
+  // get movies and categories to append in html
+  if(childrenCategoriesPreview.length == 0){
+    getTrendingMoviesPreview();
+    getCategoriesPreview();
+  }
 
-  
   $headerTitle.classList.remove('inactive');
   $headerSection.classList.remove('header-container--long');
   $trendingPreviewSection.classList.remove('inactive');
@@ -49,9 +54,10 @@ function homePage() {
   $movieDetailSection.classList.add('inactive');
 
 }
+
+
 function categoriesPage() {
   console.log("Categories!!")
-
 
   $headerTitle.classList.add('inactive');
   $headerSection.classList.remove('header-container--long');
@@ -65,7 +71,17 @@ function categoriesPage() {
   $headerCategoryTitle.classList.remove('inactive');
   $genericSection.classList.remove('inactive');
   $movieDetailSection.classList.add('inactive');
+
+  const [categoryHash, params] = location.hash.split('=')
+  const [categoryId, categoryName] = params.split('-');
+  const newCategoryName = decodeURI(categoryName)
+
+  // get and append movies to html
+  getMoviesByCategory(categoryId)
+  $headerCategoryTitle.innerHTML = newCategoryName;
 }
+
+
 function movieDetailsPage() {
   console.log("Movie!!")
 
@@ -83,6 +99,8 @@ function movieDetailsPage() {
   $genericSection.classList.add('inactive');
   $movieDetailSection.classList.remove('inactive');
 }
+
+
 function searchPage() {
   console.log("Search!!")
 
@@ -100,6 +118,8 @@ function searchPage() {
   $genericSection.classList.remove('inactive');
   $movieDetailSection.classList.add('inactive');
 }
+
+
 function trendsPage() {
   console.log("TRENDS!!")
 

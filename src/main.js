@@ -15,25 +15,9 @@ const api = axios.create({
 async function getTrendingMoviesPreview(){
 
     const { data } = await api.get('trending/movie/day');
+
     const movies = data.results;
-
-    let arrMovieContainer = [];
-    $trendingMoviesPreviewList.innerHTML = ""; 
-
-    movies.forEach(movie => {
-        const divMovieContainer = d.createElement('div');
-        divMovieContainer.className = 'movie-container';
-        
-        const imgMovie = d.createElement('img');
-        imgMovie.className = 'movie-img';
-        imgMovie.alt = movie.title;
-        imgMovie.src = URL_BASE_IMG + movie.poster_path;
-        
-        divMovieContainer.appendChild(imgMovie);
-        arrMovieContainer.push(divMovieContainer);
-    });
-    
-    $trendingMoviesPreviewList.append(...arrMovieContainer);
+    appendMovies(movies, $trendingMoviesPreviewList);
 }
 
 
@@ -48,20 +32,62 @@ async function getCategoriesPreview(){
     categories.forEach(category => {
       
         const divCategoryContainer = d.createElement('div');
-        const h3 = d.createElement('h3');
+        const categoryTitle = d.createElement('h3');
 
         divCategoryContainer.className = 'category-container';
-        h3.className = 'category-title';
-        h3.textContent = category.name;
-        h3.id = 'id' + category.id;
+        categoryTitle.className = 'category-title';
+        categoryTitle.textContent = category.name;
+        categoryTitle.id = 'id' + category.id;
 
-        divCategoryContainer.appendChild(h3);
+        categoryTitle.addEventListener('click', () => {
+            location.hash = '#category=' + category.id  + '-' + category.name
+        })
+
+
+        divCategoryContainer.appendChild(categoryTitle);
         arrcategoriesPreviewList.push(divCategoryContainer);
     });
     
     $categoriesPreviewList.append(...arrcategoriesPreviewList);
 }
 
+
+
+async function getMoviesByCategory( id ) {
+
+    const { data } = await api.get('discover/movie', {
+      params: {
+        with_genres: id
+      }
+    });
+  
+    const movies = data.results;
+    appendMovies(movies, $genericSection);
+  }
+
+
+  
+// Utils 
+
+function appendMovies(movies, container) {
+    container.innerHTML = '';
+    let arrMovieContainer = [];
+
+    movies.forEach( movie => {
+        const divMovieContainer = d.createElement('div');
+        divMovieContainer.className = 'movie-container';
+        
+        const imgMovie = d.createElement('img');
+        imgMovie.className = 'movie-img';
+        imgMovie.alt = movie.title;
+        imgMovie.src = URL_BASE_IMG + movie.poster_path;
+        
+        divMovieContainer.appendChild(imgMovie);
+        arrMovieContainer.push(divMovieContainer);
+    });
+
+    container.append(...arrMovieContainer)
+}  
 
 //getTrendingMoviesPreview();
 //getCategoriesPreview();
