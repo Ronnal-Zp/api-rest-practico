@@ -25,11 +25,106 @@ async function getCategoriesPreview(){
     const { data } = await api.get('genre/movie/list');
 
     const categories = data.genres;
+    appendCategories(categories, $categoriesPreviewList);
+}
 
-    let arrcategoriesPreviewList = [];
-    $categoriesPreviewList.innerHTML = "";
+
+
+async function getMoviesByCategory( id ) {
+
+    const { data } = await api.get('discover/movie', {
+      params: {
+        with_genres: id
+      }
+    });
+  
+    const movies = data.results;
+    appendMovies(movies, $genericSection);
+}
+
+
+async function getMoviesBySearch( search ) {
+    const { data } = await api.get('search/movie', {
+        params: {
+          query: search
+        }
+    });
+
+    const movies = data.results;
+    appendMovies(movies, $genericSection);
+}
+
+
+async function getTrendingMovies() {
+
+    const { data } = await api.get('trending/movie/day');
+
+    const movies = data.results;
+    appendMovies(movies, $genericSection);
+}
+
+
+async function getMovieById(movieId) {
+    const { data } = await api.get(`movie/${movieId}`);
+    const categorias = data.genres;
     
-    categories.forEach(category => {
+    $movieDetailTitle.textContent = data.original_title;
+    $movieDetailDescription.textContent = data.overview;
+    $movieDetailScore.textContent = data.vote_average.toFixed(1);
+
+    $headerSection.style.background = `
+        url(${URL_BASE_IMG}${data.poster_path}),
+        linear-gradient(
+            180deg, 
+            rgba(0, 0, 0, 0.35) 19.27%, 
+            rgba(0, 0, 0, 0) 29.17%
+        )
+    `;
+
+    appendCategories(categorias, $movieDetailCategoriesList);
+    getRelatedMoviesById(movieId);
+}
+
+
+async function getRelatedMoviesById(movieId) {
+    const { data } = await api.get(`movie/${movieId}/similar`);
+    const movies = data.results;
+
+    appendMovies(movies, $relatedMoviesContainer);
+}
+
+
+// Utils 
+
+function appendMovies(movies, container) {
+    container.innerHTML = '';
+    let arrMovieContainer = [];
+
+    movies.forEach( movie => {
+        const divMovieContainer = d.createElement('div');
+        divMovieContainer.className = 'movie-container';
+        
+        const imgMovie = d.createElement('img');
+        imgMovie.className = 'movie-img';
+        imgMovie.alt = movie.title;
+        imgMovie.src = URL_BASE_IMG + movie.poster_path;
+        imgMovie.addEventListener('click', () => {
+            location.hash = 'movie=' + movie.id
+        });
+        
+        divMovieContainer.appendChild(imgMovie);
+        arrMovieContainer.push(divMovieContainer);
+    });
+
+    container.append(...arrMovieContainer)
+}  
+
+
+function appendCategories(categories, container) {
+    let arrcategoriesPreviewList = [];
+    container.innerHTML = "";
+    
+    categories.forEach( category => {
       
         const divCategoryContainer = d.createElement('div');
         const categoryTitle = d.createElement('h3');
@@ -48,46 +143,7 @@ async function getCategoriesPreview(){
         arrcategoriesPreviewList.push(divCategoryContainer);
     });
     
-    $categoriesPreviewList.append(...arrcategoriesPreviewList);
+    container.append(...arrcategoriesPreviewList);
 }
 
 
-
-async function getMoviesByCategory( id ) {
-
-    const { data } = await api.get('discover/movie', {
-      params: {
-        with_genres: id
-      }
-    });
-  
-    const movies = data.results;
-    appendMovies(movies, $genericSection);
-  }
-
-
-  
-// Utils 
-
-function appendMovies(movies, container) {
-    container.innerHTML = '';
-    let arrMovieContainer = [];
-
-    movies.forEach( movie => {
-        const divMovieContainer = d.createElement('div');
-        divMovieContainer.className = 'movie-container';
-        
-        const imgMovie = d.createElement('img');
-        imgMovie.className = 'movie-img';
-        imgMovie.alt = movie.title;
-        imgMovie.src = URL_BASE_IMG + movie.poster_path;
-        
-        divMovieContainer.appendChild(imgMovie);
-        arrMovieContainer.push(divMovieContainer);
-    });
-
-    container.append(...arrMovieContainer)
-}  
-
-//getTrendingMoviesPreview();
-//getCategoriesPreview();
