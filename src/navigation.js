@@ -53,6 +53,9 @@ function homePage() {
   $headerCategoryTitle.classList.add('inactive');
   $genericSection.classList.add('inactive');
   $movieDetailSection.classList.add('inactive');
+  $movieDetailImg.classList.add('inactive');
+
+  document.getElementsByTagName('body')[0].style.backgroundColor = '#FBFAFB';
 
 }
 
@@ -72,6 +75,11 @@ function categoriesPage() {
   $headerCategoryTitle.classList.remove('inactive');
   $genericSection.classList.remove('inactive');
   $movieDetailSection.classList.add('inactive');
+  $movieDetailImg.classList.add('inactive');
+
+  // Devolver fondo al body
+  document.getElementsByTagName('body')[0].style.backgroundColor = '#FBFAFB';
+
 
   const [categoryHash, params] = location.hash.split('=')
   const [categoryId, categoryName] = params.split('-');
@@ -95,10 +103,14 @@ function movieDetailsPage() {
   
   $arrowBtn.classList.remove('inactive');
   $arrowBtn.classList.add('header-arrow-white');
-  //$headerSection.style.background = ''
   $headerCategoryTitle.classList.add('inactive');
   $genericSection.classList.add('inactive');
   $movieDetailSection.classList.remove('inactive');
+  $movieDetailImg.classList.remove('inactive')
+
+  // Quitar fondo al body 
+  document.getElementsByTagName('body')[0].style.backgroundColor = '#5c218a';
+
 
 
   const [_, movieId] = location.hash.split('=');
@@ -122,6 +134,10 @@ function searchPage() {
   $headerCategoryTitle.classList.add('inactive');
   $genericSection.classList.remove('inactive');
   $movieDetailSection.classList.add('inactive');
+  $movieDetailImg.classList.add('inactive');
+
+  // Devolver fondo al body
+  document.getElementsByTagName('body')[0].style.backgroundColor = '#FBFAFB';
 
   const [_, search] = location.hash.split('=');
   const newSearch = decodeURI(search);
@@ -146,6 +162,10 @@ function trendsPage() {
   $headerCategoryTitle.classList.remove('inactive');
   $genericSection.classList.remove('inactive');
   $movieDetailSection.classList.add('inactive');
+  $movieDetailImg.classList.add('inactive');
+
+  // Devolver fondo al body
+  document.getElementsByTagName('body')[0].style.backgroundColor = '#FBFAFB';
 
   $headerCategoryTitle.innerHTML = 'Tendencias';
   getTrendingMovies();

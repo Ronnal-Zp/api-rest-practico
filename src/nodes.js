@@ -14,6 +14,7 @@ const $relatedMoviesContainer = document.querySelector('.relatedMovies-scrollCon
 
 // Elements
 const $headerTitle = document.querySelector('.header-title');
+const $movieDetailImg = document.querySelector('#movieDetailImg')
 const $arrowBtn = document.querySelector('.header-arrow');
 const $headerCategoryTitle = document.querySelector('.header-title--categoryView');
 

@@ -72,14 +72,17 @@ async function getMovieById(movieId) {
     $movieDetailDescription.textContent = data.overview;
     $movieDetailScore.textContent = data.vote_average.toFixed(1);
 
-    $headerSection.style.background = `
-        url(${URL_BASE_IMG}${data.poster_path}),
-        linear-gradient(
-            180deg, 
-            rgba(0, 0, 0, 0.35) 19.27%, 
-            rgba(0, 0, 0, 0) 29.17%
-        )
-    `;
+    $movieDetailImg.src = URL_BASE_IMG + data.poster_path;
+    // $headerSection.style.background = `
+    //     url(${URL_BASE_IMG}${data.poster_path})
+    //     center center no-repeat/200px auto
+    //     linear-gradient(
+    //         180deg, 
+    //         rgba(0, 0, 0, 0.35) 19.27%, 
+    //         rgba(0, 0, 0, 0) 29.17%
+    //     )
+    // `;
+    
 
     appendCategories(categorias, $movieDetailCategoriesList);
     getRelatedMoviesById(movieId);
