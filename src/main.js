@@ -12,6 +12,13 @@ const api = axios.create({
     },
 });
 
+
+// Escuchar scroll para cargar peliculas
+let page = 1;
+window.addEventListener('scroll', loadMoreMovies)
+
+
+
 async function getTrendingMoviesPreview(){
 
     const { data } = await api.get('trending/movie/day');
@@ -98,9 +105,13 @@ async function getRelatedMoviesById(movieId) {
 
 
 // Utils 
+// Agregar peliculas
+function appendMovies(movies, container, {
+    scroll = false
+} = {}) {
+    
+    if( !scroll ) container.innerHTML = '';
 
-function appendMovies(movies, container) {
-    container.innerHTML = '';
     let arrMovieContainer = [];
 
     movies.forEach( movie => {
@@ -122,7 +133,7 @@ function appendMovies(movies, container) {
     container.append(...arrMovieContainer)
 }  
 
-
+// Agregar categorias
 function appendCategories(categories, container) {
     let arrcategoriesPreviewList = [];
     container.innerHTML = "";
@@ -149,4 +160,24 @@ function appendCategories(categories, container) {
     container.append(...arrcategoriesPreviewList);
 }
 
+// Cargar peliculas por scroll
+async function loadMoreMovies() {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    const scrollValid = scrollHeight - clientHeight - 15;
 
+    if( !(scrollTop >= scrollValid) ) {
+        return;
+    }
+
+
+    page++;
+    const { data } = await api.get('trending/movie/day', {
+        params: {
+            page
+        }
+    });
+
+
+    const movies = data.results;
+    appendMovies(movies, $genericSection, { scroll: true})
+}
