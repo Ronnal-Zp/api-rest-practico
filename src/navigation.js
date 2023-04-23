@@ -17,12 +17,15 @@ $arrowBtn.addEventListener('click', ()=>{
 
 function navigator() {
   if (location.hash.startsWith("#trends")) {
+    window.addEventListener('scroll', loadMoreMovies);
     trendsPage()
   } else if (location.hash.startsWith("#search=")) {
+    window.addEventListener('scroll', loadMoreMovies);
     searchPage()
   } else if (location.hash.startsWith("#movie=")) {
     movieDetailsPage()
   } else if (location.hash.startsWith("#category=")) {
+    window.removeEventListener('scroll', loadMoreMovies)
     categoriesPage()
   } else {
     homePage()

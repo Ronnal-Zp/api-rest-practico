@@ -13,9 +13,23 @@ const api = axios.create({
 });
 
 
-// Escuchar scroll para cargar peliculas
+// listener of scroll trending movies
 let page = 1;
-window.addEventListener('scroll', loadMoreMovies)
+let maxPages;
+
+
+// lazyloader for img movies
+const lazyLoader = new IntersectionObserver( (entries, observer) => {
+
+    entries.forEach((item) => {
+        const movieElement = item.target;
+
+        if(item.isIntersecting) {
+            const urlImg = movieElement.getAttribute('data-img');
+            if(urlImg) movieElement.setAttribute('src', urlImg);
+        }
+    })
+})
 
 
 
@@ -24,7 +38,7 @@ async function getTrendingMoviesPreview(){
     const { data } = await api.get('trending/movie/day');
 
     const movies = data.results;
-    appendMovies(movies, $trendingMoviesPreviewList);
+    appendMovies(movies, $trendingMoviesPreviewList, {lazyLoad: true});
 }
 
 
@@ -50,6 +64,7 @@ async function getMoviesByCategory( id ) {
 }
 
 
+
 async function getMoviesBySearch( search ) {
     const { data } = await api.get('search/movie', {
         params: {
@@ -58,7 +73,7 @@ async function getMoviesBySearch( search ) {
     });
 
     const movies = data.results;
-    appendMovies(movies, $genericSection);
+    appendMovies(movies, $genericSection, { lazyLoad: true });
 }
 
 
@@ -67,7 +82,9 @@ async function getTrendingMovies() {
     const { data } = await api.get('trending/movie/day');
 
     const movies = data.results;
-    appendMovies(movies, $genericSection);
+    maxPages = data.total_pages;
+
+    appendMovies(movies, $genericSection, {lazyLoad: true, scroll: true});
 }
 
 
@@ -107,7 +124,8 @@ async function getRelatedMoviesById(movieId) {
 // Utils 
 // Agregar peliculas
 function appendMovies(movies, container, {
-    scroll = false
+    scroll = false,
+    lazyLoad = false
 } = {}) {
     
     if( !scroll ) container.innerHTML = '';
@@ -121,10 +139,25 @@ function appendMovies(movies, container, {
         const imgMovie = d.createElement('img');
         imgMovie.className = 'movie-img';
         imgMovie.alt = movie.title;
-        imgMovie.src = URL_BASE_IMG + movie.poster_path;
+
+        const urlImg = URL_BASE_IMG + movie.poster_path;
+
+        // lazyload img
+        (lazyLoad) 
+            ? imgMovie.setAttribute('data-img', urlImg) 
+            : imgMovie.setAttribute('src', urlImg); 
+
+        // show movie
         imgMovie.addEventListener('click', () => {
             location.hash = 'movie=' + movie.id
         });
+
+
+        // imgMovie.addEventListener('error', (e) => {
+        //     console.log(e)
+        // })
+
+        lazyLoader.observe(imgMovie)
         
         divMovieContainer.appendChild(imgMovie);
         arrMovieContainer.push(divMovieContainer);
@@ -163,9 +196,11 @@ function appendCategories(categories, container) {
 // Cargar peliculas por scroll
 async function loadMoreMovies() {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-    const scrollValid = scrollHeight - clientHeight - 15;
+    
+    const scrolled = scrollTop + clientHeight;
+    const maxScroll = scrollHeight - 15;
 
-    if( !(scrollTop >= scrollValid) ) {
+    if( scrolled < maxScroll || page >= maxPages ) {
         return;
     }
 
@@ -179,5 +214,5 @@ async function loadMoreMovies() {
 
 
     const movies = data.results;
-    appendMovies(movies, $genericSection, { scroll: true})
+    appendMovies(movies, $genericSection, { scroll: true, lazyLoad: true})
 }
